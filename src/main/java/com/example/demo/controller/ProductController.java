@@ -8,9 +8,11 @@ import com.example.demo.dto.ProductDto;
 import com.example.demo.entity.Category;
 import com.example.demo.entity.Product;
 import com.example.demo.entity.Spec;
+import com.example.demo.entity.SpecName;
 import com.example.demo.jsonview.Views;
 import com.example.demo.repository.CategoryRepository;
 import com.example.demo.repository.ProductRepository;
+import com.example.demo.repository.SpecNameRepository;
 import com.example.demo.repository.SpecRepository;
 import com.fasterxml.jackson.annotation.JsonView;
 
@@ -33,6 +35,9 @@ public class ProductController {
     CategoryRepository categoryRepository;
 
     @Autowired
+    SpecNameRepository specNameRepository;
+
+    @Autowired
     SpecRepository specRepository;
 
     @GetMapping
@@ -52,6 +57,7 @@ public class ProductController {
     @PostMapping("/products")
     public Product addCustomer(@RequestBody ProductDto product) {
         logger.info("POST /products");
+        logger.info("Debug - product: {}", product.getSpecs());
 
         Product persistentProduct = new Product();
 
@@ -61,12 +67,22 @@ public class ProductController {
         Category persistentCategory = categoryRepository.save(category);
 
         for (Spec spec : specs) {
-            // var specName = specNameRepository.findById(spec.getSpecName().getId()).get();
-            // if (specName.getCategory().getId() != product.getCategory().getId())
-            // return;
-            // spec.setSpecName(specName);
+            // Optional<SpecName> optionalSpecName =
+            // specNameRepository.findById(spec.getSpecName().getId());
+            // if (!optionalSpecName.isPresent())
+            // throw new NoSuchElementException("No specification name found");
+
+            SpecName persistentSpecName = new SpecName();
+            persistentSpecName.setCategory(persistentCategory);
+            persistentSpecName.setName(spec.getSpecName().getName());
+            SpecName specName = specNameRepository.save(persistentSpecName);
+
+            // if (specName.getCategory().getId().equals(product.getCategory().getId()))
+            // throw new DataIntegrityViolationException("No specification name found");
+
+            specName.setCategory(persistentCategory);
+            spec.setSpecName(specName);
             spec.setProduct(persistentProduct);
-            // spec.setCategory(persistentCategory);
         }
 
         List<Spec> persistentSpecs = specRepository.saveAll(product.getSpecs());
