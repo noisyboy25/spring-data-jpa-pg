@@ -5,8 +5,10 @@ import java.util.List;
 import java.util.Map;
 
 import com.example.demo.dto.ProductDto;
+import com.example.demo.entity.Category;
 import com.example.demo.entity.Product;
 import com.example.demo.entity.Spec;
+import com.example.demo.repository.CategoryRepository;
 import com.example.demo.repository.ProductRepository;
 import com.example.demo.repository.SpecRepository;
 
@@ -26,6 +28,9 @@ public class ProductController {
     ProductRepository productRepository;
 
     @Autowired
+    CategoryRepository categoryRepository;
+
+    @Autowired
     SpecRepository specRepository;
 
     @GetMapping
@@ -33,26 +38,33 @@ public class ProductController {
         return "Hello World";
     }
 
-    @GetMapping("/customers")
-    public Map<String, List<Product>> getAllCustomers() {
-        logger.info("GET /customers");
+    @GetMapping("/products")
+    public Map<String, List<Product>> getAllProducts() {
+        logger.info("GET /products");
 
-        return Collections.singletonMap("customers", productRepository.findAll());
+        return Collections.singletonMap("products", productRepository.findAll());
     }
 
-    @PostMapping("/customers")
+    @PostMapping("/products")
     public Product addCustomer(@RequestBody ProductDto product) {
-        logger.info("POST /customers");
+        logger.info("POST /products");
 
         Product persistentProduct = new Product();
 
         List<Spec> specs = product.getSpecs();
-        for (Spec spec : specs)
+
+        Category category = product.getCategory();
+        Category persistentCategory = categoryRepository.save(category);
+
+        for (Spec spec : specs) {
             spec.setProduct(persistentProduct);
+            spec.setCategory(persistentCategory);
+        }
 
         List<Spec> persistentSpecs = specRepository.saveAll(product.getSpecs());
 
         persistentProduct.setName(product.getName());
+        persistentProduct.setCategory(persistentCategory);
         persistentProduct.setSpecs(persistentSpecs);
         return productRepository.save(persistentProduct);
     }
