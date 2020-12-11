@@ -1,12 +1,14 @@
 package com.example.demo.entity;
 
-import javax.persistence.CascadeType;
+import java.util.List;
+
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
+import javax.persistence.OneToMany;
 
 import com.example.demo.jsonview.Views;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
@@ -18,22 +20,21 @@ import lombok.Setter;
 @Entity
 @Getter
 @Setter
-public class Spec {
+public class SpecName {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     private long id;
 
     @JsonView(Views.ProductSimple.class)
-    private String value;
+    private String name;
+
+    @OneToMany
+    @JoinColumn
+    @JsonIgnoreProperties("specs")
+    private List<Spec> specs;
 
     @ManyToOne
     @JoinColumn
-    @JsonIgnoreProperties("specs")
-    @JsonView(Views.ProductSimple.class)
-    private SpecName specName;
-
-    @ManyToOne(cascade = CascadeType.ALL)
-    @JoinColumn
-    @JsonIgnoreProperties("specs")
-    private Product product;
+    @JsonIgnoreProperties("specNames")
+    private Category category;
 }

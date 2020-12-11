@@ -8,9 +8,11 @@ import com.example.demo.dto.ProductDto;
 import com.example.demo.entity.Category;
 import com.example.demo.entity.Product;
 import com.example.demo.entity.Spec;
+import com.example.demo.jsonview.Views;
 import com.example.demo.repository.CategoryRepository;
 import com.example.demo.repository.ProductRepository;
 import com.example.demo.repository.SpecRepository;
+import com.fasterxml.jackson.annotation.JsonView;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -38,6 +40,7 @@ public class ProductController {
         return "Hello World";
     }
 
+    @JsonView(Views.ProductSimple.class)
     @GetMapping("/products")
     public Map<String, List<Product>> getAllProducts() {
         logger.info("GET /products");
@@ -45,6 +48,7 @@ public class ProductController {
         return Collections.singletonMap("products", productRepository.findAll());
     }
 
+    @JsonView(Views.ProductSimple.class)
     @PostMapping("/products")
     public Product addCustomer(@RequestBody ProductDto product) {
         logger.info("POST /products");
@@ -57,8 +61,12 @@ public class ProductController {
         Category persistentCategory = categoryRepository.save(category);
 
         for (Spec spec : specs) {
+            // var specName = specNameRepository.findById(spec.getSpecName().getId()).get();
+            // if (specName.getCategory().getId() != product.getCategory().getId())
+            // return;
+            // spec.setSpecName(specName);
             spec.setProduct(persistentProduct);
-            spec.setCategory(persistentCategory);
+            // spec.setCategory(persistentCategory);
         }
 
         List<Spec> persistentSpecs = specRepository.saveAll(product.getSpecs());

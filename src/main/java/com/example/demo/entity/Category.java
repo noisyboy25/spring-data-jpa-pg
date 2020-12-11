@@ -8,7 +8,9 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.OneToMany;
 
+import com.example.demo.jsonview.Views;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonView;
 
 import lombok.Getter;
 import lombok.Setter;
@@ -19,8 +21,10 @@ import lombok.Setter;
 public class Category {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
+    @JsonView(Views.ProductSimple.class)
     private Long id;
 
+    @JsonView(Views.ProductSimple.class)
     private String name;
 
     @OneToMany(mappedBy = "category")
@@ -29,5 +33,5 @@ public class Category {
 
     @OneToMany(mappedBy = "category")
     @JsonIgnoreProperties("category")
-    private List<Spec> specs;
+    private List<SpecName> specNames;
 }
