@@ -4,7 +4,6 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
-import com.example.demo.DemoApplication;
 import com.example.demo.dto.ProductDto;
 import com.example.demo.entity.Product;
 import com.example.demo.entity.Spec;
@@ -21,41 +20,40 @@ import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 public class ProductController {
-    Logger logger = LoggerFactory.getLogger(DemoApplication.class);
+    Logger logger = LoggerFactory.getLogger(ProductController.class);
 
-	@Autowired
-	ProductRepository productRepository;
+    @Autowired
+    ProductRepository productRepository;
 
-	@Autowired
-	SpecRepository specRepository;
+    @Autowired
+    SpecRepository specRepository;
 
-	@GetMapping
-	public String helloWorld() {
-		return "Hello World";
-	}
+    @GetMapping
+    public String helloWorld() {
+        return "Hello World";
+    }
 
-	@GetMapping("/customers")
-	public Map<String, List<Product>> getAllCustomers() {
-		return Collections.singletonMap("customers", productRepository.findAll());
-	}
+    @GetMapping("/customers")
+    public Map<String, List<Product>> getAllCustomers() {
+        logger.info("GET /customers");
 
-	@PostMapping("/customers")
-	public Product addCustomer(@RequestBody ProductDto product) {
-		logger.info(product.getName());
-		Product persistentProduct = new Product();
-		List<Spec> specs = product.getSpecs();
-		for (Spec spec : specs) {
-			spec.setProduct(persistentProduct);
-		}
+        return Collections.singletonMap("customers", productRepository.findAll());
+    }
 
-		List<Spec> persistentSpecs = specRepository.saveAll(product.getSpecs());
+    @PostMapping("/customers")
+    public Product addCustomer(@RequestBody ProductDto product) {
+        logger.info("POST /customers");
 
-		String specStr = product.getSpecs().get(0).getName();
-		logger.info(specStr);
+        Product persistentProduct = new Product();
 
-		persistentProduct.setName(product.getName());
+        List<Spec> specs = product.getSpecs();
+        for (Spec spec : specs)
+            spec.setProduct(persistentProduct);
 
-		persistentProduct.setSpecs(persistentSpecs);
-		return productRepository.save(persistentProduct);
-	}
+        List<Spec> persistentSpecs = specRepository.saveAll(product.getSpecs());
+
+        persistentProduct.setName(product.getName());
+        persistentProduct.setSpecs(persistentSpecs);
+        return productRepository.save(persistentProduct);
+    }
 }
