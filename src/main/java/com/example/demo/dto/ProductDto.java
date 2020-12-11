@@ -1,6 +1,6 @@
 package com.example.demo.dto;
 
-import java.util.Set;
+import java.util.List;
 
 import com.example.demo.entity.Spec;
 
@@ -11,5 +11,5 @@ import lombok.Setter;
 @Setter
 public class ProductDto {
     String name;
-    Set<Spec> specs;
+    List<Spec> specs;
 }

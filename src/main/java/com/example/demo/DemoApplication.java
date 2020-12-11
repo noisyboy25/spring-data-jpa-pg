@@ -3,12 +3,14 @@ package com.example.demo;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
+
+import javax.transaction.Transactional;
 
 import com.example.demo.dto.ProductDto;
 import com.example.demo.entity.Product;
 import com.example.demo.entity.Spec;
 import com.example.demo.repository.ProductRepository;
+import com.example.demo.repository.SpecRepository;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -28,6 +30,9 @@ public class DemoApplication {
 	@Autowired
 	ProductRepository productRepository;
 
+	@Autowired
+	SpecRepository specRepository;
+
 	@GetMapping
 	public String helloWorld() {
 		return "Hello World";
@@ -39,16 +44,23 @@ public class DemoApplication {
 	}
 
 	@PostMapping("/customers")
+	@Transactional
 	public Product addCustomer(@RequestBody ProductDto product) {
 		logger.info(product.getName());
-		Set<Spec> productSpecs = product.getSpecs();
-		
-		String specStr = "";
-		if (productSpecs != null) specStr = productSpecs.toString();
-		logger.info(specStr);
 		Product persistentProduct = new Product();
+		List<Spec> specs = product.getSpecs();
+		for (Spec spec : specs) {
+			spec.setProduct(persistentProduct);
+		}
+
+		List<Spec> persistentSpecs = specRepository.saveAll(product.getSpecs());
+
+		String specStr = product.getSpecs().get(0).getName();
+		logger.info(specStr);
+
 		persistentProduct.setName(product.getName());
-		persistentProduct.setSpecs(product.getSpecs());
+
+		persistentProduct.setSpecs(persistentSpecs);
 		return productRepository.save(persistentProduct);
 	}
 
