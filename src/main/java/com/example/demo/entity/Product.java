@@ -24,10 +24,10 @@ import lombok.Setter;
 public class Product {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
-    @JsonView({ Views.CategorySimple.class })
+    @JsonView({ Views.ProductSimple.class, Views.CategorySimple.class })
     private Long id;
 
-    @JsonView({ Views.CategorySimple.class, Views.ProductSimple.class })
+    @JsonView({ Views.ProductSimple.class, Views.CategorySimple.class })
     private String name;
 
     @ManyToOne
