@@ -21,17 +21,19 @@ import lombok.Setter;
 public class Category {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
-    @JsonView(Views.ProductSimple.class)
+    @JsonView({ Views.CategorySimple.class, Views.ProductSimple.class })
     private Long id;
 
-    @JsonView(Views.ProductSimple.class)
+    @JsonView({ Views.CategorySimple.class, Views.ProductSimple.class })
     private String name;
 
     @OneToMany(mappedBy = "category")
     @JsonIgnoreProperties("category")
+    @JsonView({ Views.CategorySimple.class })
     private List<Product> products;
 
     @OneToMany(mappedBy = "category")
     @JsonIgnoreProperties("category")
+    @JsonView({ Views.CategorySimple.class })
     private List<SpecName> specNames;
 }

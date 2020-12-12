@@ -2,6 +2,7 @@ package com.example.demo.entity;
 
 import java.util.List;
 
+import javax.persistence.CascadeType;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
@@ -23,17 +24,17 @@ import lombok.Setter;
 public class SpecName {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
+    @JsonView({ Views.ProductSimple.class, Views.CategorySimple.class })
     private long id;
 
-    @JsonView(Views.ProductSimple.class)
+    @JsonView({ Views.ProductSimple.class, Views.CategorySimple.class })
     private String name;
 
-    @OneToMany
-    @JoinColumn
+    @OneToMany(mappedBy = "specName")
     @JsonIgnoreProperties("specs")
     private List<Spec> specs;
 
-    @ManyToOne
+    @ManyToOne(cascade = CascadeType.ALL)
     @JoinColumn
     @JsonIgnoreProperties("specNames")
     private Category category;

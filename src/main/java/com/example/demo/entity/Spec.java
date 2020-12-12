@@ -14,24 +14,22 @@ import com.fasterxml.jackson.annotation.JsonView;
 
 import lombok.Getter;
 import lombok.Setter;
-import lombok.ToString;
 
 @Entity
 @Getter
 @Setter
-@ToString
 public class Spec {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     private long id;
 
-    @JsonView(Views.ProductSimple.class)
+    @JsonView({ Views.ProductSimple.class })
     private String value;
 
     @ManyToOne
     @JoinColumn
     @JsonIgnoreProperties("specs")
-    @JsonView(Views.ProductSimple.class)
+    @JsonView({ Views.ProductSimple.class })
     private SpecName specName;
 
     @ManyToOne(cascade = CascadeType.ALL)

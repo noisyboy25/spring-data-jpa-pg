@@ -6,10 +6,4 @@ public interface Views {
 
     public static interface CategorySimple {
     }
-
-    public static interface SpecNameSimple {
-    }
-
-    public static interface SpecSimple {
-    }
 }

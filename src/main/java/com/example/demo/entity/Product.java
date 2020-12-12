@@ -24,20 +24,20 @@ import lombok.Setter;
 public class Product {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
-    @JsonView(Views.ProductSimple.class)
+    @JsonView({ Views.CategorySimple.class })
     private Long id;
 
-    @JsonView(Views.ProductSimple.class)
+    @JsonView({ Views.CategorySimple.class, Views.ProductSimple.class })
     private String name;
 
     @ManyToOne
     @JoinColumn
     @JsonIgnoreProperties("product")
-    @JsonView(Views.ProductSimple.class)
+    @JsonView({ Views.ProductSimple.class })
     private Category category;
 
     @OneToMany(mappedBy = "product", cascade = CascadeType.ALL)
     @JsonIgnoreProperties("product")
-    @JsonView(Views.ProductSimple.class)
+    @JsonView({ Views.ProductSimple.class })
     private List<Spec> specs;
 }
