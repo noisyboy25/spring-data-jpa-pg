@@ -23,6 +23,7 @@ import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
@@ -44,6 +45,17 @@ public class ProductController {
     private SpecRepository specRepository;
 
     @JsonView({ Views.ProductSimple.class })
+    @GetMapping("/products/{id}")
+    public Product getProduct(@PathVariable Long id, Pageable pageable) {
+        logger.info("GET /products/{}", id);
+
+        Optional<Product> optionalProduct = productRepository.findById(id);
+        if (!optionalProduct.isPresent())
+            throw new NoSuchElementException("No product found");
+        return optionalProduct.get();
+    }
+
+    @JsonView({ Views.ProductSimple.class })
     @GetMapping("/products")
     public Page<Product> getAllProducts(Pageable pageable) {
         logger.info("GET /products");
@@ -55,7 +67,6 @@ public class ProductController {
     @PostMapping("/products")
     public Product addCustomer(@RequestBody ProductDto product) {
         logger.info("POST /products");
-        logger.info("Debug - product: {}", product.getSpecs());
 
         Category category = product.getCategory();
         Optional<Category> optionalCategory = categoryRepository.findById(category.getId());
@@ -69,8 +80,6 @@ public class ProductController {
         List<Spec> specs = product.getSpecs();
 
         for (Spec spec : specs) {
-            String tmp = Long.toString(spec.getSpecName().getId());
-            logger.info("spec.getSpecName().getId() -> {}", tmp);
             Optional<SpecName> optionalSpecName = specNameRepository.findById(spec.getSpecName().getId());
             if (!optionalSpecName.isPresent())
                 throw new NoSuchElementException("No specification name found");

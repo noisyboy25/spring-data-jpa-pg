@@ -1,6 +1,8 @@
 package com.example.demo.controller;
 
 import java.util.List;
+import java.util.NoSuchElementException;
+import java.util.Optional;
 
 import com.example.demo.dto.CategoryDto;
 import com.example.demo.entity.Category;
@@ -16,6 +18,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
@@ -29,6 +32,17 @@ public class CategoryController {
 
     @Autowired
     SpecNameRepository specNameRepository;
+
+    @JsonView({ Views.CategorySimple.class })
+    @GetMapping("/categories/{id}")
+    public Category getCategory(@PathVariable Long id, Pageable pageable) {
+        logger.info("GET /categories/{}", id);
+
+        Optional<Category> optionalProduct = categoryRepository.findById(id);
+        if (!optionalProduct.isPresent())
+            throw new NoSuchElementException("No category found");
+        return optionalProduct.get();
+    }
 
     @GetMapping("/categories")
     @JsonView({ Views.CategorySimple.class })
