@@ -1,8 +1,6 @@
 package com.example.demo.controller;
 
-import java.util.Collections;
 import java.util.List;
-import java.util.Map;
 import java.util.NoSuchElementException;
 import java.util.Optional;
 
@@ -22,6 +20,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -45,10 +45,10 @@ public class ProductController {
 
     @JsonView({ Views.ProductSimple.class })
     @GetMapping("/products")
-    public Map<String, List<Product>> getAllProducts() {
+    public Page<Product> getAllProducts(Pageable pageable) {
         logger.info("GET /products");
 
-        return Collections.singletonMap("products", productRepository.findAll());
+        return productRepository.findAll(pageable);
     }
 
     @JsonView({ Views.ProductSimple.class })
